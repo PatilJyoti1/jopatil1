@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Expense Tracker</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Expense Tracker</h1>
+    <form id="expenseForm">
+      <div class="form-group">
+        <label for="amount">Amount:</label>
+        <input type="number" class="form-control" id="amount" required>
+      </div>
+      <div class="form-group">
+        <label for="description">Description:</label>
+        <input type="text" class="form-control" id="description" required>
+      </div>
+      <div class="form-group">
+        <label for="category">Category:</label>
+        <select class="form-control" id="category" required>
+          <option value="fuel">Fuel</option>
+          <option value="food">Food</option>
+          <option value="movies">Movies</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary">Add Expense</button>
+    </form>
+    <br>
+    <table id="expenseTable" class="table">
+      <thead>
+        <tr>
+          <th>Amount</th>
+          <th>Description</th>
+          <th>Category</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <button id="deleteExpensesBtn" class="btn btn-danger">Delete Expenses</button>
+  </div>
+
+  <script>
+    // Check if localStorage has expenses data and load it
+    if (localStorage.getItem("expenses")) {
+      var expenses = JSON.parse(localStorage.getItem("expenses"));
+      updateExpenseTable(expenses);
+    } else {
+      var expenses = [];
+    }
+
+    // Add expense event listener
+    document.getElementById("expenseForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      var amount = document.getElementById("amount").value;
+      var description = document.getElementById("description").value;
+      var category = document.getElementById("category").value;
+      var expense = {
+        amount: amount,
+        description: description,
+        category: category
+      };
+      expenses.push(expense);
+      updateExpenseTable(expenses);
+      saveExpensesToLocalStorage(expenses);
+      document.getElementById("expenseForm").reset();
+    });
+
+    // Delete expenses event listener
+    document.getElementById("deleteExpensesBtn").addEventListener("click", function() {
+      localStorage.removeItem("expenses");
+      expenses = [];
+      updateExpenseTable(expenses);
+    });
+
+    // Update the expense table
+    function updateExpenseTable(expenses) {
+      var tableBody = document.getElementById("expenseTable").getElementsByTagName("tbody")[0];
+      tableBody.innerHTML = "";
+      for (var i = 0; i < expenses.length; i++) {
+        var row = tableBody.insertRow(i);
+        var amountCell = row.insertCell(0);
+        amountCell.textContent = expenses[i].amount;
+        var descriptionCell = row.insertCell(1);
+        descriptionCell.textContent = expenses[i].description;
+        var categoryCell = row.insertCell(2);
+        categoryCell.textContent = expenses[i].category;
+        var editCell = row.insertCell(3);
+        var editButton = document.createElement("button");
+        editButton.classList.add("btn", "btn-primary", "btn-sm");
+        editButton.textContent = "Edit";
+        editButton.addEventListener("click", editExpense.bind(null, i));
+        editCell.appendChild(editButton);
+        var deleteCell = row.insertCell(4);
+        var deleteButton = document.createElement("button");
+        deleteButton.classList.add("btn", "btn-danger", "btn-sm");
+        deleteButton.textContent = "Delete";
+        deleteButton.addEventListener("click", deleteExpense.bind(null, i));
+        deleteCell.appendChild(deleteButton);
+      }
+    }
+
+    // Edit a specific expense in the table
+    function editExpense(index) {
+      var expense = expenses[index];
+      document.getElementById("amount").value = expense.amount;
+      document.getElementById("description").value = expense.description;
+      document.getElementById("category").value = expense.category;
+      expenses.splice(index, 1);
+      updateExpenseTable(expenses);
+      saveExpensesToLocalStorage(expenses);
+    }
+
+    // Delete a specific expense from the table
+    function deleteExpense(index) {
+      expenses.splice(index, 1);
+      updateExpenseTable(expenses);
+      saveExpensesToLocalStorage(expenses);
+    }
+
+    // Save expenses to localStorage
+    function saveExpensesToLocalStorage(expenses) {
+      localStorage.setItem("expenses", JSON.stringify(expenses));
+    }
+  </script>
+</body>
+</html>

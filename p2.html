@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DOM Manipulation and Form Validation Example</title>
+    <style>
+        .green {
+            color: green;
+        }
+        .yellow {
+            color: yellow;
+        }
+    </style>
+</head>
+<body>
+    <ul id="myList">
+        <li>HELLO</li>
+        <li>WORLD</li>
+        <li>EXAMPLE</li>
+    </ul>
+
+    <form id="myForm">
+        <input type="text" id="myInput" required>
+        <button type="submit">Submit</button>
+    </form>
+
+    <script>
+        const listItems = document.querySelectorAll('#myList li');
+        const form = document.getElementById('myForm');
+        const input = document.getElementById('myInput');
+
+        // Click event listener
+        listItems[0].addEventListener('click', function() {
+            this.classList.add('green');
+        });
+
+        // Mouseover event listener
+        listItems[1].addEventListener('mouseover', function() {
+            this.classList.add('yellow');
+        });
+
+        // Mouseout event listener
+        listItems[1].addEventListener('mouseout', function() {
+            this.classList.remove('yellow');
+        });
+
+        // Form submit event listener
+        form.addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent form submission
+
+            if (input.validity.valid) {
+                console.log('Form value:', input.value);
+                form.reset();
+            } else {
+                console.log('Please enter a valid value.');
+            }
+        });
+    </script>
+</body>
+</html>
